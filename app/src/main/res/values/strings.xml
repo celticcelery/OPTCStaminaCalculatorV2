@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OPTCStaminaCalculator</string>
+    <string name="current_stamina">Current Stamina</string>
+    <string name="desired_stamina">Desired Stamina</string>
+    <string name="current_time">Current Time</string>
+    <string name="expected_time">Expected Time</string>
+    <string name="calculate_btn">Calculate</string>
+    <string name="reset_btn">Reset</string>
+</resources>
