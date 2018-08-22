@@ -1,5 +1,10 @@
 package com.domain.celticcelery.optcstaminacalculator;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +19,9 @@ import java.util.Calendar;
 public class StaminaToTime extends AppCompatActivity {
 
 	private Calendar time;
-	private Button calculateBtn, desiredBtn;
+	private AlarmManager alarmMgr;
+	private PendingIntent alarmIntent;
+	private Button calculateBtn, desiredBtn, alarmBtn;
 	private EditText currentStaminaText, desiredStaminaText;
 	private TextView currentTimeEditText, expectedTimeEditText;
 	private String emptyDisplay = "";
@@ -38,7 +45,6 @@ public class StaminaToTime extends AppCompatActivity {
 	}
 
 	public int getNeededStamina() {
-
 		int currentStam = Integer.parseInt(currentStaminaText.getText().toString());
 		int desiredStam = Integer.parseInt(desiredStaminaText.getText().toString());
 		return ((desiredStam - currentStam) * rechargeTime);
@@ -52,6 +58,8 @@ public class StaminaToTime extends AppCompatActivity {
 		desiredStaminaText.setText(emptyDisplay);
 		currentTimeEditText.setText(emptyDisplay);
 		expectedTimeEditText.setText(emptyDisplay);
+		neededStam = 0;
+		time = null;
 	}
 
 	public void onClickCalculate(View view) {
@@ -79,7 +87,33 @@ public class StaminaToTime extends AppCompatActivity {
 
 	}
 
+	public void onClickAlarm(View view){
+		try {
+			onClickCalculate(view);
+			Toast.makeText(this, "Alarm set for " + df.format(time.getTime()), Toast.LENGTH_SHORT).show();
+			setAlarm(neededStam * 60 * 1000);
+		}
+		catch(IllegalStateException | NullPointerException | NumberFormatException nfex) {
+			Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+		}
+
+	}
+
+	private void setAlarm(long timeInMillis) {
+		alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(this, AlarmReceiver.class);
+
+		alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+//
+		alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()
+		+ timeInMillis, alarmIntent);
+
+	}
+
 	public void onClickReset(View view) {
 		clearScreen();
+		if(alarmMgr != null) {
+			alarmMgr.cancel(alarmIntent);
+		}
 	}
 }

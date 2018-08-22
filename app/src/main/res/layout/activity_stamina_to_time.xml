@@ -63,6 +63,14 @@
             android:layout_weight="1"
             android:onClick="onClickReset"
             android:text="@string/reset_btn" />
+
+        <Button
+            android:id="@+id/alarmBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickAlarm"
+            android:text="Set Alarm" />
     </LinearLayout>
 
     <LinearLayout
