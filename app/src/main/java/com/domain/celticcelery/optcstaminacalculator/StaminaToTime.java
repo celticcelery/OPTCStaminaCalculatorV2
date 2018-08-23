@@ -4,7 +4,9 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -90,12 +92,14 @@ public class StaminaToTime extends AppCompatActivity {
 
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.M)
 	public void onClickAlarm(View view){
 		try {
 			Toast.makeText(this, "Alarm set for " + df.format(time.getTime()), Toast.LENGTH_SHORT).show();
 
 				setAlarm(neededStam * 60 * 1000);
 				alarmBtn.setEnabled(false);
+
 
 
 		}
@@ -105,14 +109,14 @@ public class StaminaToTime extends AppCompatActivity {
 
 	}
 
+
+	@RequiresApi(api = Build.VERSION_CODES.M)
 	private void setAlarm(long timeInMillis) {
 		alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		Intent intent = new Intent(this, AlarmReceiver.class);
 
 		alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-		alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()
-		+ timeInMillis, alarmIntent);
-
+		alarmMgr.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeInMillis, alarmIntent);
 	}
 
 	public void onClickReset(View view) {
