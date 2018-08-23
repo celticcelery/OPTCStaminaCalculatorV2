@@ -27,7 +27,7 @@ public class StaminaToTime extends AppCompatActivity {
 	private String emptyDisplay = "";
 	private SimpleDateFormat df = new SimpleDateFormat("MMMM dd, yyyy \t HH:mm:ss");
 	private String error = "Please enter inputs for Current Stamina and Desired Stamina";
-	private int neededStam, rechargeTime = 3;
+	private int neededStam, currentNeededStam, rechargeTime = 3;
 
 
 
@@ -41,6 +41,7 @@ public class StaminaToTime extends AppCompatActivity {
 		expectedTimeEditText = (TextView) findViewById(R.id.expectedTimeEditText);
 		currentStaminaText = (EditText) findViewById(R.id.currentStaminaText);
 		desiredStaminaText = (EditText) findViewById(R.id.desiredStaminaText);
+		alarmBtn = (Button) findViewById(R.id.alarmBtn);
 
 	}
 
@@ -60,12 +61,14 @@ public class StaminaToTime extends AppCompatActivity {
 		expectedTimeEditText.setText(emptyDisplay);
 		neededStam = 0;
 		time = null;
+		alarmBtn.setEnabled(true);
 	}
 
 	public void onClickCalculate(View view) {
 
 		try {
 			neededStam = getNeededStamina();
+			currentNeededStam = neededStam;
 		}
 		catch(IllegalStateException | NumberFormatException nfex){
 			Toast.makeText(this,error,Toast.LENGTH_SHORT).show();
@@ -89,12 +92,15 @@ public class StaminaToTime extends AppCompatActivity {
 
 	public void onClickAlarm(View view){
 		try {
-			onClickCalculate(view);
 			Toast.makeText(this, "Alarm set for " + df.format(time.getTime()), Toast.LENGTH_SHORT).show();
-			setAlarm(neededStam * 60 * 1000);
+
+				setAlarm(neededStam * 60 * 1000);
+				alarmBtn.setEnabled(false);
+
+
 		}
 		catch(IllegalStateException | NullPointerException | NumberFormatException nfex) {
-			Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "No alarm. Please press calculate for a desired time first", Toast.LENGTH_LONG).show();
 		}
 
 	}
@@ -104,7 +110,6 @@ public class StaminaToTime extends AppCompatActivity {
 		Intent intent = new Intent(this, AlarmReceiver.class);
 
 		alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-//
 		alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()
 		+ timeInMillis, alarmIntent);
 
@@ -116,4 +121,6 @@ public class StaminaToTime extends AppCompatActivity {
 			alarmMgr.cancel(alarmIntent);
 		}
 	}
+
+
 }
